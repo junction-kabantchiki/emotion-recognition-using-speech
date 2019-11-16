@@ -144,12 +144,7 @@ class DeepEmotionRecognizer(EmotionRecognizer):
         return filename if os.path.isfile(filename) else None
 
     def _compute_input_length(self):
-        """
-        Calculates the input shape to be able to construct the model.
-        """
-        if not self.data_loaded:
-            self.load_data()
-        self.input_length = self.X_train[0].shape[1]
+        self.input_length = 180
 
     def _verify_emotions(self):
         super()._verify_emotions()
@@ -207,31 +202,7 @@ class DeepEmotionRecognizer(EmotionRecognizer):
             print("[+] Model created")
 
     def load_data(self):
-        """
-        Loads and extracts features from the audio files for the db's specified.
-        And then reshapes the data.
-        """
-        super().load_data()
-        # reshape X's to 3 dims
-        X_train_shape = self.X_train.shape
-        X_test_shape = self.X_test.shape
-        self.X_train = self.X_train.reshape((1, X_train_shape[0], X_train_shape[1]))
-        self.X_test = self.X_test.reshape((1, X_test_shape[0], X_test_shape[1]))
-
-        if self.classification:
-            # one-hot encode when its classification
-            self.y_train = to_categorical([ self.emotions2int[str(e)] for e in self.y_train ])
-            self.y_test = to_categorical([ self.emotions2int[str(e)] for e in self.y_test ])
-        
-        # reshape labels
-        y_train_shape = self.y_train.shape
-        y_test_shape = self.y_test.shape
-        if self.classification:
-            self.y_train = self.y_train.reshape((1, y_train_shape[0], y_train_shape[1]))    
-            self.y_test = self.y_test.reshape((1, y_test_shape[0], y_test_shape[1]))
-        else:
-            self.y_train = self.y_train.reshape((1, y_train_shape[0], 1))
-            self.y_test = self.y_test.reshape((1, y_test_shape[0], 1))
+        pass
 
     def train(self, override=False):
         """
@@ -290,7 +261,7 @@ class DeepEmotionRecognizer(EmotionRecognizer):
             proba = self.model.predict(feature)[0][0]
             result = {}
             for prob, emotion in zip(proba, self.emotions):
-                result[emotion] = prob
+                result[emotion] = prob.astype("float")
             return result
         else:
             raise NotImplementedError("Probability prediction doesn't make sense for regression")

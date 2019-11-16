@@ -60,7 +60,9 @@ def extract_feature(file_name, **kwargs):
     contrast = kwargs.get("contrast")
     tonnetz = kwargs.get("tonnetz")
     with soundfile.SoundFile(file_name) as sound_file:
-        X = sound_file.read(dtype="float32")
+        X = sound_file.read(dtype="float")
+        if len(X.shape) > 1:
+            X = X[:, 0]
         sample_rate = sound_file.samplerate
         if chroma or contrast:
             stft = np.abs(librosa.stft(X))

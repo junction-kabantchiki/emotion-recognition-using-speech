@@ -72,8 +72,6 @@ class EmotionRecognizer:
 
         # set metadata path file names
         self._set_metadata_filenames()
-        # write csv's anyway
-        self.write_csv()
 
         # boolean attributes
         self.data_loaded = False
